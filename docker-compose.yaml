@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  api:
+    depends_on:
+      - mongodb
+    build:
+      context: ./wallet-api
+      target: release
+    environment:
+      MONGODB_NAME: ${MONGODB_NAME}
+      MONGODB_USER: ${MONGODB_USER}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_URI: mongodb://mongodb:${MONGODB_PORT}
+      API_KEY: ${API_KEY}
+    ports:
+      - ${WALLET_API_BIND}:4000/tcp
+    restart: always
+
+  mongodb:
+    image: mongo:6.0
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+    ports:
+      - ${MONGODB_PORT}:27017
+    restart: always

@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./wallet-api
+      target: build
+    volumes:
+      - type: bind
+        source: ./wallet-api/src
+        target: /app/src
+        consistency: delegated
+    environment:
+      - TSC_WATCHFILE=UseFsEvents
