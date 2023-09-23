@@ -13,15 +13,35 @@ services:
       MONGODB_PASSWORD: ${MONGODB_PASSWORD}
       MONGODB_URI: mongodb://mongodb:${MONGODB_PORT}
       API_KEY: ${API_KEY}
+      REDIS_HOST: ${REDIS_HOST}
     ports:
       - ${WALLET_API_BIND}:4000/tcp
     restart: always
 
+  processor:
+    depends_on:
+      - mongodb
+    build:
+      context: ./wallet-processor
+      target: release
+    environment:
+      MONGODB_NAME: ${MONGODB_NAME}
+      MONGODB_USER: ${MONGODB_USER}
+      MONGODB_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_URI: mongodb://mongodb:${MONGODB_PORT}
+      REDIS_HOST: ${REDIS_HOST}
+    restart: always
+
   mongodb:
     image: mongo:6.0
+    volumes:
+      - '${MONGODB_DATA_DIR}/data:/data/db'
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
-    ports:
-      - ${MONGODB_PORT}:27017
     restart: always
+
+  redis:
+    image: redis:7.2.1
+    volumes:
+      - "${REDIS_DATA_DIR}/data:/data"

@@ -8,8 +8,12 @@ export API_KEY=Tao1My93vgUu35MDxDdmA
 export MONGODB_PORT=27017
 export WALLET_API_BIND=4000
 export WALLET_PROCESSOR_BIND=4001
+export MONGODB_DATA_DIR=~/docker-mongodb-wallet
 
 export MONGODB_NAME=wallet
 export MONGODB_USER=root
 export MONGODB_PASSWORD=qwe123
 export MONGODB_URI=mongodb://${MONGODB_NAME}:27017
+
+export REDIS_HOST=redis
+export REDIS_DATA_DIR=~/docker-redis-wallet

@@ -10,6 +10,8 @@ import { AuthMiddleware } from './presentation/middlewares/auth.middleware';
 import { Customer, CustomerSchema } from './infrastructure/schemas/customer.schema';
 import { CustomerRepository } from './infrastructure/customer.repository';
 import { TransactionUseCases } from './use-cases/transaction.use-cases';
+import { BullModule } from '@nestjs/bull';
+import { TransactionRepository } from './infrastructure/transaction.repository';
 
 @Module({
   imports: [
@@ -25,12 +27,22 @@ import { TransactionUseCases } from './use-cases/transaction.use-cases';
       name: Customer.name,
       schema: CustomerSchema,
     }]),
+    BullModule.forRoot({
+      redis: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: 6379,
+      },
+    }),
+    BullModule.registerQueue({
+      name: 'transaction',
+    }),
   ],
   controllers: [CustomerController, TransactionController],
   providers: [
     CustomerUseCases,
     CustomerRepository,
     TransactionUseCases,
+    TransactionRepository,
     HeaderApiKeyStrategy,
     AuthMiddleware,
   ],

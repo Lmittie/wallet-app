@@ -2,17 +2,21 @@ import { Injectable } from '@nestjs/common';
 import { chain, orderBy, sumBy } from 'lodash';
 
 import { TransactionDto } from '../presentation/dto/transaction.dto';
+import { TransactionRepository } from '../infrastructure/transaction.repository';
 
 const LATENCY_MAX = 1000;
 
 @Injectable()
 export class TransactionUseCases {
-  constructor() {}
+  constructor(
+    private readonly transactionRepository: TransactionRepository,
+  ) {}
 
   public async execute(transactions: TransactionDto[]) {
     const transactionChunks = this.createChunks(transactions);
 
     console.log(transactionChunks);
+    await this.transactionRepository.saveChunks(transactionChunks);
   }
 
   private createChunks(transactions: TransactionDto[]): TransactionDto[][] {

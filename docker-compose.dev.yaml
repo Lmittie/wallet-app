@@ -12,3 +12,15 @@ services:
         consistency: delegated
     environment:
       - TSC_WATCHFILE=UseFsEvents
+
+  processor:
+    build:
+      context: ./wallet-processor
+      target: build
+    volumes:
+      - type: bind
+        source: ./wallet-processor/src
+        target: /app/src
+        consistency: delegated
+    environment:
+      - TSC_WATCHFILE=UseFsEvents
