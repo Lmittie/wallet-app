@@ -1,6 +1,9 @@
 import { IsNotEmpty, IsNumber, IsString, Min } from 'class-validator';
 
-export class UpdateCustomerDto {
+export class CreateCustomerDto {
+  @IsNotEmpty()
+  public _id: string;
+
   @IsNotEmpty()
   @IsString()
   public first_name: string;

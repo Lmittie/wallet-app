@@ -3,8 +3,6 @@ import { PassportStrategy } from '@nestjs/passport';
 
 import { HeaderAPIKeyStrategy } from 'passport-headerapikey';
 
-const API_KEY = '123'; // todo remove key to env file
-
 @Injectable()
 export class HeaderApiKeyStrategy extends PassportStrategy(HeaderAPIKeyStrategy, 'api-key') {
   constructor() {
@@ -12,7 +10,7 @@ export class HeaderApiKeyStrategy extends PassportStrategy(HeaderAPIKeyStrategy,
       { header: 'X-API-KEY', prefix: '' },
       true,
       async (apiKey, done) => {
-        if (API_KEY === apiKey) {
+        if (apiKey === process.env.API_KEY) {
           done(null, true);
         }
 

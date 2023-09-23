@@ -1,15 +1,11 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import * as passport from 'passport';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  use(req: any, res: any, next: () => void) {
-    passport.authenticate(
-      'headerapikey',
-      value => {
-        req.isAuthorized = !!value;
-        next();
-      },
-    )(req, res, next);
+  public async use(req, res, next) {
+    const apiKey = req.headers['x-api-key'];
+
+    req.isAuthorized = apiKey === process.env.API_KEY;
+    next();
   }
 }
