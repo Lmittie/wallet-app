@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import * as mongoose from 'mongoose';
+import { ObjectId } from 'mongodb';
 
 @Schema()
 export class Customer {
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
+    type: ObjectId,
     required: true,
   })
   public _id: string;
@@ -22,7 +22,7 @@ export class Customer {
   public last_name: string;
 
   @Prop({
-    type: mongoose.Schema.Types.Number,
+    type: Number,
     required: true,
   })
   public balance: number;

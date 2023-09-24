@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { chain, orderBy, sumBy } from 'lodash';
+import { orderBy, sumBy } from 'lodash';
 
 import { TransactionDto } from '../presentation/dto/transaction.dto';
 import { TransactionRepository } from '../infrastructure/transaction.repository';
@@ -22,10 +22,7 @@ export class TransactionUseCases {
   private createChunks(transactions: TransactionDto[]): TransactionDto[][] {
     const chunks: TransactionDto[][] = [];
 
-    const sortedTransactions = chain(transactions)
-      .orderBy(({ value }) => value, 'desc')
-      .orderBy(({ latency }) => latency, 'desc')
-      .value();
+    const sortedTransactions = orderBy(transactions, ['value', 'latency'], ['desc', 'asc']);
 
     for (const transaction of sortedTransactions) {
       const availableChunk = chunks.find(chunk => {

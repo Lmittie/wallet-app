@@ -1,11 +1,12 @@
 import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Model } from 'mongoose';
+import { HydratedDocument, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
 import * as schema from './schemas';
 import * as view from '../presentation/views';
 import { CreateCustomerDto } from '../presentation/dto/create-customer.dto';
 import { UpdateCustomerDto } from '../presentation/dto/update-customer.dto';
+import { Customer } from './schemas';
 
 @Injectable()
 export class CustomerRepository {
@@ -19,7 +20,7 @@ export class CustomerRepository {
       const customer = new this.customerModel(createCustomerDto);
       await customer.save();
 
-      return customer;
+      return this.toView(customer);
     } catch (error) {
       if (error.name === 'ValidationError') {
         throw new BadRequestException(error.message);
@@ -39,7 +40,7 @@ export class CustomerRepository {
       throw new NotFoundException(`Customer with ${id} not found.`);
     }
 
-    return customer;
+    return this.toView(customer);
   }
 
   public async update(id: string, customerDto: UpdateCustomerDto): Promise<view.Customer> {
@@ -48,7 +49,7 @@ export class CustomerRepository {
       throw new NotFoundException(`Customer with ${id} not found.`);
     }
 
-    return customer;
+    return this.toView(customer as HydratedDocument<Customer>);
   }
 
   public async delete(id: string): Promise<void> {
@@ -56,5 +57,14 @@ export class CustomerRepository {
     if (!customer) {
       throw new NotFoundException(`Customer with ${id} not found.`);
     }
+  }
+
+  private toView(customerDbModel: HydratedDocument<Customer>): view.Customer {
+    return {
+      _id: customerDbModel._id,
+      first_name: customerDbModel.first_name,
+      last_name: customerDbModel.last_name,
+      balance: customerDbModel.balance,
+    };
   }
 }
