@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { orderBy, sumBy } from 'lodash';
+import { orderBy, sortBy, sumBy } from 'lodash';
 
-import { TransactionDto } from '../presentation/dto/transaction.dto';
-import { TransactionRepository } from '../infrastructure/transaction.repository';
+import { TransactionDto } from '../../presentation/dto/transaction.dto';
+import { TransactionRepository } from '../../infrastructure/repositories/transaction.repository';
 
 const LATENCY_MAX = 1000;
 
@@ -13,13 +13,13 @@ export class TransactionUseCases {
   ) {}
 
   public async execute(transactions: TransactionDto[]) {
-    const transactionChunks = this.createChunks(transactions);
+    const transactionChunks = this.splitIntoChunks(transactions);
 
-    console.log(transactionChunks);
     await this.transactionRepository.saveChunks(transactionChunks);
+    this.logChunks(transactionChunks);
   }
 
-  private createChunks(transactions: TransactionDto[]): TransactionDto[][] {
+  public splitIntoChunks(transactions: TransactionDto[]): TransactionDto[][] {
     const chunks: TransactionDto[][] = [];
 
     const sortedTransactions = orderBy(transactions, ['value', 'latency'], ['desc', 'asc']);
@@ -42,5 +42,18 @@ export class TransactionUseCases {
       chunk => sumBy(chunk, ({ value }) => value),
       'desc',
     );
+  }
+
+  private logChunks(transactionChunks: TransactionDto[][]): void {
+    const messages = (transactionChunks.map(
+      (chunk, index) => {
+        const totalValue = sumBy(chunk, ({ value }) => value);
+        const totalTime = sumBy(chunk, ({ latency }) => latency);
+        const remainingTime = LATENCY_MAX - totalTime;
+        return `chunk ${index + 1}:\n  transactions: ${JSON.stringify(chunk)}\n  total value:${totalValue}\n  time left:${remainingTime}`;
+      }
+    ));
+
+    console.log(messages.join('\n'));
   }
 }

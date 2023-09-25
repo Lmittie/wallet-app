@@ -13,6 +13,7 @@ RUN npm i
 
 COPY tsconfig.json tsconfig.build.json nest-cli.json .eslintrc.js ./
 COPY src src/
+COPY test test/
 
 RUN npm run build
 

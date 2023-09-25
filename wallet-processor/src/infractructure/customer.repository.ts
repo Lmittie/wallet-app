@@ -12,7 +12,7 @@ export class CustomerRepository {
   ) {}
 
   public async get(id: string): Promise<Customer | undefined> {
-    return this.customerModel.findById(id).exec();
+    return this.customerModel.findOne({ _id: id }).exec();
   }
 
   public async updateBalance(id: string, balance: number): Promise<void> {

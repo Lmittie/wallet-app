@@ -2,11 +2,10 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotFound
 import { HydratedDocument, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 
-import * as schema from './schemas';
-import * as view from '../presentation/views';
-import { CreateCustomerDto } from '../presentation/dto/create-customer.dto';
-import { UpdateCustomerDto } from '../presentation/dto/update-customer.dto';
-import { Customer } from './schemas';
+import * as schema from '../schemas';
+import * as view from '../../presentation/views';
+import { CreateCustomerDto } from '../../presentation/dto/create-customer.dto';
+import { UpdateCustomerDto } from '../../presentation/dto/update-customer.dto';
 
 @Injectable()
 export class CustomerRepository {
@@ -37,7 +36,7 @@ export class CustomerRepository {
   public async get(id: string): Promise<view.Customer> {
     const customer = await this.customerModel.findById(id).exec();
     if (!customer) {
-      throw new NotFoundException(`Customer with ${id} not found.`);
+      throw new NotFoundException(`Customer with id ${id} not found.`);
     }
 
     return this.toView(customer);
@@ -46,20 +45,20 @@ export class CustomerRepository {
   public async update(id: string, customerDto: UpdateCustomerDto): Promise<view.Customer> {
     const customer = await this.customerModel.findOneAndUpdate({ _id: id }, customerDto, { new: true });
     if (!customer) {
-      throw new NotFoundException(`Customer with ${id} not found.`);
+      throw new NotFoundException(`Customer with id ${id} not found.`);
     }
 
-    return this.toView(customer as HydratedDocument<Customer>);
+    return this.toView(customer as HydratedDocument<schema.Customer>);
   }
 
   public async delete(id: string): Promise<void> {
     const customer = await this.customerModel.findOneAndDelete({ _id: id });
     if (!customer) {
-      throw new NotFoundException(`Customer with ${id} not found.`);
+      throw new NotFoundException(`Customer with id ${id} not found.`);
     }
   }
 
-  private toView(customerDbModel: HydratedDocument<Customer>): view.Customer {
+  private toView(customerDbModel: HydratedDocument<schema.Customer>): view.Customer {
     return {
       _id: customerDbModel._id,
       first_name: customerDbModel.first_name,

@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, ParseArrayPipe, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -9,8 +9,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 
-import { ApiKeyAuthGuard } from '../guards/api-key-auth.guard';
-import { TransactionUseCases } from '../../use-cases/transaction.use-cases';
+import { ApiKeyAuthGuard } from '../middlewares/api-key-auth.guard';
+import { TransactionUseCases } from '../../domain/use-cases/transaction.use-cases';
 import { TransactionDto } from '../dto/transaction.dto';
 
 @Controller('transaction')
@@ -27,7 +27,9 @@ export class TransactionController {
   @ApiParam({ name: 'id', description: 'MongoDB ObjectId' })
   @ApiResponse({ status: HttpStatus.NO_CONTENT })
   @ApiBadRequestResponse()
-  public async execute(@Body() transactions: TransactionDto[]) {
+  public async execute(
+    @Body(new ParseArrayPipe({ items: TransactionDto })) transactions: TransactionDto[],
+  ) {
     await this.transactionUseCases.execute(transactions);
   }
 }

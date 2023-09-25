@@ -23,11 +23,11 @@ import {
 } from '@nestjs/swagger';
 import { Response } from 'express';
 
-import { CustomerUseCases } from '../../use-cases/customer.use-cases';
+import { CustomerUseCases } from '../../domain/use-cases/customer.use-cases';
 import { UpdateCustomerDto } from '../dto/update-customer.dto';
 import { IsAuthorized } from '../decorators/is-authorized';
 import { CreateCustomerDto } from '../dto/create-customer.dto';
-import { ApiKeyAuthGuard } from '../guards/api-key-auth.guard';
+import { ApiKeyAuthGuard } from '../middlewares/api-key-auth.guard';
 import { ParseObjectIdPipe } from '../middlewares/object-id-validation.pipe';
 import * as view from '../views';
 

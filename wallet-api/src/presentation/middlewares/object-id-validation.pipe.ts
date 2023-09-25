@@ -4,12 +4,9 @@ import { ObjectId } from 'mongodb';
 @Injectable()
 export class ParseObjectIdPipe implements PipeTransform<any, ObjectId> {
   public transform(value: any): ObjectId {
-    try {
-      const transformedObjectId: ObjectId = ObjectId.createFromHexString(value);
-
-      return transformedObjectId;
-    } catch (error) {
+    if (!ObjectId.isValid(value)) {
       throw new BadRequestException('Identifier must be ObjectId');
     }
+    return value;
   }
 }

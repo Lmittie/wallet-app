@@ -3,6 +3,7 @@ import { Job, Queue } from 'bull';
 
 import { Transaction } from './transaction.interface';
 import { CustomerRepository } from '../infractructure/customer.repository';
+import { CustomerUseCases } from '../domain/customer.use-cases';
 
 interface JobData {
   transactions: Transaction[];
@@ -11,7 +12,7 @@ interface JobData {
 @Processor('transaction')
 export class TransactionProcessor {
   constructor(
-    private readonly customerRepository: CustomerRepository,
+    private readonly customerUseCases: CustomerUseCases,
     @InjectQueue('transaction') private transactionQueue: Queue,
   ) {}
 
@@ -20,19 +21,7 @@ export class TransactionProcessor {
     const { transactions } = job.data;
 
     for (const { customerId, value } of transactions) {
-      const customer = await this.customerRepository.get(customerId);
-      if (!customer) {
-        console.log(`Customer with ${customerId} doest not exist.`);
-        continue;
-      }
-
-      const newBalance = customer.balance - value;
-      if (newBalance < 0) {
-        console.log(`Customer "${customerId}": Cannot subtract money from balance.\nCustomer balance: ${customer.balance}\nSubtraction value: ${value}`);
-      } else {
-        console.log(`Customer "${customerId}":\nOld balance: ${customer.balance}\nNew balance: ${newBalance}`);
-        await this.customerRepository.updateBalance(customerId, newBalance);
-      }
+      await this.customerUseCases.subtractFromBalance(customerId, value);
     }
   }
 }

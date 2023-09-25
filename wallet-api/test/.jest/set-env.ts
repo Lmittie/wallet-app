@@ -1,0 +1,1 @@
+process.env.MONGODB_NAME = 'test';

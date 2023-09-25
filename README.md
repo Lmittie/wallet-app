@@ -22,9 +22,23 @@ Build and run the app with watchers:
 . env/dev && docker compose up --build -d
 ```
 
+### Testing
+
+Run unit tests
+```sh
+. env/prod && docker compose exec api npm run test
+```
+
+Run e2e tests
+```sh
+. env/prod && docker compose exec api npm run test:e2e
+```
+
 ## API
 
-Once everything has started up, you should be able to access the app API documentation via http://localhost:4000/api#/ on your host machine.
+Once everything has started up, you should be able to access the API documentation via http://localhost:4000/api#/ on your host machine.
+
+You can import Postman collection from `postman` directory.
 
 ## Microservices overview
 

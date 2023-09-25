@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { Customer, CustomerSchema } from './infractructure/customer.schema';
 import { CustomerRepository } from './infractructure/customer.repository';
+import { CustomerUseCases } from './domain/customer.use-cases';
 
 @Module({
   imports: [
@@ -29,6 +30,6 @@ import { CustomerRepository } from './infractructure/customer.repository';
       name: 'transaction',
     }),
   ],
-  providers: [TransactionProcessor, CustomerRepository],
+  providers: [TransactionProcessor, CustomerUseCases, CustomerRepository],
 })
 export class AppModule {}
