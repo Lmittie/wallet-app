@@ -28,7 +28,7 @@ describe('Transaction use cases unit tests', () => {
       expect(expected).toEqual(expect.arrayContaining(actual));
     };
 
-    it('should split transaction array into chunks', () => {
+    it('should split transaction array into chunks (working)', () => {
       const transactionArray = [
         { value: 130, latency: 600, customerId: 'ID' },
         { value: 70, latency: 250, customerId: 'ID' },
@@ -56,21 +56,19 @@ describe('Transaction use cases unit tests', () => {
       }
     });
 
-    // Actually this test case is incorrect. I discovered it just before the deadline...
-    it('should split transaction array into chunks with same value and different latency', () => {
+    it('should split transaction array into chunks with same value and different latency (not working)', () => {
       const transactionArray = [
         { value: 200, latency: 850, customerId: 'ID' },
-        { value: 100, latency: 150, customerId: 'ID' },
         { value: 100, latency: 100, customerId: 'ID' },
+        { value: 100, latency: 150, customerId: 'ID' },
         { value: 50, latency: 900, customerId: 'ID' },
       ];
 
       const expectedChunks = [[
         { value: 200, latency: 850, customerId: 'ID' },
-        { value: 100, latency: 100, customerId: 'ID' },
-      ], [
         { value: 100, latency: 150, customerId: 'ID' },
       ], [
+        { value: 100, latency: 100, customerId: 'ID' },
         { value: 50, latency: 900, customerId: 'ID' },
       ]];
 
@@ -81,7 +79,7 @@ describe('Transaction use cases unit tests', () => {
       }
     });
 
-    it('should split transaction array into chunks with same value and different latency', () => {
+    it('should split transaction array into chunks with same value and different latency (working)', () => {
       const transactionArray = [
         { value: 200, latency: 850, customerId: 'ID' },
         { value: 100, latency: 150, customerId: 'ID' },
@@ -93,6 +91,37 @@ describe('Transaction use cases unit tests', () => {
         { value: 200, latency: 850, customerId: 'ID' },
         { value: 100, latency: 100, customerId: 'ID' },
         { value: 50, latency: 50, customerId: 'ID' },
+      ], [
+        { value: 100, latency: 150, customerId: 'ID' },
+      ]];
+
+      const actualChunks = transactionUseCases.splitIntoChunks(transactionArray);
+      console.log(actualChunks);
+
+      for (let i = 0; i < expectedChunks.length; i++) {
+        expectArrayEquivalence(actualChunks[i], expectedChunks[i]);
+      }
+    });
+
+    it('should split transaction array into chunks (not working)', () => {
+      const transactionArray = [
+        { value: 200, latency: 850, customerId: 'ID' },
+        { value: 100, latency: 100, customerId: 'ID' },
+        { value: 100, latency: 150, customerId: 'ID' },
+        { value: 90, latency: 75, customerId: 'ID' },
+        { value: 60, latency: 50, customerId: 'ID' },
+        { value: 50, latency: 900, customerId: 'ID' },
+        { value: 30, latency: 25, customerId: 'ID' },
+      ];
+
+      const expectedChunks = [[
+        { value: 200, latency: 850, customerId: 'ID' },
+        { value: 90, latency: 75, customerId: 'ID' },
+        { value: 60, latency: 50, customerId: 'ID' },
+        { value: 30, latency: 25, customerId: 'ID' },
+      ], [
+        { value: 100, latency: 100, customerId: 'ID' },
+        { value: 50, latency: 900, customerId: 'ID' },
       ], [
         { value: 100, latency: 150, customerId: 'ID' },
       ]];
